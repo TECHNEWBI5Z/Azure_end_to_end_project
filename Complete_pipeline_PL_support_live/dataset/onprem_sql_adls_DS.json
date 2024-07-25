@@ -1,0 +1,27 @@
+{
+    "name": "onprem_sql_adls_DS",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "faizan_adls_LS",
+            "type": "LinkedServiceReference"
+        },
+        "folder": {
+            "name": "Onprem_Transfer"
+        },
+        "annotations": [],
+        "type": "DelimitedText",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "folderPath": "onprem-sql-data",
+                "fileSystem": "landing-zone"
+            },
+            "columnDelimiter": ",",
+            "escapeChar": "\\",
+            "firstRowAsHeader": true,
+            "quoteChar": "\""
+        },
+        "schema": []
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

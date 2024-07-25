@@ -1,0 +1,6 @@
+selected resource name:		Complete_pipeline_PL
+selected resource type:		pipeline
+factory name:			faizan-data-factory
+factory location:		centralindia
+subscription id:		181b4747-54e9-4385-9ff1-b3c0dc0c02de
+time of download (UTC):		Thu, 25 Jul 2024 05:37:25 GMT

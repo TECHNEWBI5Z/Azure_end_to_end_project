@@ -1,0 +1,21 @@
+{
+    "name": "SYN_ADLS_DS",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "syn_adls_LS",
+            "type": "LinkedServiceReference"
+        },
+        "folder": {
+            "name": "ADLS_TO_SYN_ADLS"
+        },
+        "annotations": [],
+        "type": "Binary",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileSystem": "goldlayer"
+            }
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

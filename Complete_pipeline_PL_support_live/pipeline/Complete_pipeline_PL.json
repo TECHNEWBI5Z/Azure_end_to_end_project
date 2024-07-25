@@ -1,0 +1,121 @@
+{
+    "name": "Complete_pipeline_PL",
+    "properties": {
+        "activities": [
+            {
+                "name": "Pipeline_1",
+                "type": "ExecutePipeline",
+                "dependsOn": [],
+                "policy": {
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "IOT_BLOB_TO_ADLS_PL",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true
+                }
+            },
+            {
+                "name": "Pipeline_2",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Pipeline_1",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "onprem_sql_to_adls_PL",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true
+                }
+            },
+            {
+                "name": "Pipeline_3",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Pipeline_2",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "http_to_adls_PL",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true
+                }
+            },
+            {
+                "name": "Pipeline_4",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Pipeline_3",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "computation_PL",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true
+                }
+            },
+            {
+                "name": "Pipeline_5",
+                "type": "ExecutePipeline",
+                "dependsOn": [
+                    {
+                        "activity": "Pipeline_4",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "pipeline": {
+                        "referenceName": "ADLS_TO_SYN_ADLS_PL",
+                        "type": "PipelineReference"
+                    },
+                    "waitOnCompletion": true
+                }
+            }
+        ],
+        "folder": {
+            "name": "PROJECT_PIPELINE"
+        },
+        "annotations": [],
+        "lastPublishTime": "2024-07-24T17:05:03Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

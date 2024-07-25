@@ -1,0 +1,19 @@
+{
+    "name": "faizan_blob_LS",
+    "type": "Microsoft.DataFactory/factories/linkedservices",
+    "properties": {
+        "annotations": [],
+        "type": "AzureBlobStorage",
+        "typeProperties": {
+            "connectionString": "DefaultEndpointsProtocol=https;AccountName=faizanblobstore;EndpointSuffix=core.windows.net;",
+            "accountKey": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "faizan_key_vault",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": "faizan-blob-storage-key"
+            }
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "name": "onprem_sql_LS",
+    "type": "Microsoft.DataFactory/factories/linkedservices",
+    "properties": {
+        "annotations": [],
+        "type": "SqlServer",
+        "typeProperties": {
+            "connectionString": "Integrated Security=False;Data Source=faizanvm\\SQLEXPRESS;Initial Catalog=growth_data;User ID=faizan_sql",
+            "password": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "faizan_key_vault",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": "onprem-sql-password"
+            }
+        },
+        "connectVia": {
+            "referenceName": "self-hosted-IR",
+            "type": "IntegrationRuntimeReference"
+        }
+    }
+}

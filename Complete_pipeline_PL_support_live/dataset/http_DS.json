@@ -1,0 +1,43 @@
+{
+    "name": "http_DS",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "gcp_bucket_http_LS",
+            "type": "LinkedServiceReference",
+            "parameters": {
+                "baseurl": {
+                    "value": "@dataset().baseurl",
+                    "type": "Expression"
+                }
+            }
+        },
+        "parameters": {
+            "baseurl": {
+                "type": "string"
+            },
+            "relativeurl": {
+                "type": "string"
+            }
+        },
+        "folder": {
+            "name": "gcp_http_Transfer"
+        },
+        "annotations": [],
+        "type": "DelimitedText",
+        "typeProperties": {
+            "location": {
+                "type": "HttpServerLocation",
+                "relativeUrl": {
+                    "value": "@dataset().relativeurl",
+                    "type": "Expression"
+                }
+            },
+            "columnDelimiter": ",",
+            "escapeChar": "\\",
+            "firstRowAsHeader": true,
+            "quoteChar": "\""
+        },
+        "schema": []
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

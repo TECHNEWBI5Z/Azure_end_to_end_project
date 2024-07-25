@@ -1,0 +1,20 @@
+{
+    "name": "faizan_databricks_LS",
+    "type": "Microsoft.DataFactory/factories/linkedservices",
+    "properties": {
+        "annotations": [],
+        "type": "AzureDatabricks",
+        "typeProperties": {
+            "domain": "https://adb-1369833035971778.18.azuredatabricks.net",
+            "accessToken": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "faizan_key_vault",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": "access-token"
+            },
+            "existingClusterId": "0725-042513-h0ejgjqp"
+        }
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "name": "faizan_adls_LS",
+    "type": "Microsoft.DataFactory/factories/linkedservices",
+    "properties": {
+        "annotations": [],
+        "type": "AzureBlobFS",
+        "typeProperties": {
+            "url": "https://faizanadlsstore.dfs.core.windows.net/",
+            "accountKey": {
+                "type": "AzureKeyVaultSecret",
+                "store": {
+                    "referenceName": "faizan_key_vault",
+                    "type": "LinkedServiceReference"
+                },
+                "secretName": "faizan-adls-store-key"
+            }
+        }
+    }
+}

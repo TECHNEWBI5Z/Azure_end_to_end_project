@@ -1,0 +1,784 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "faizan-data-factory"
+		},
+		"faizan_synapse_SQL_SER_LS_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'faizan_synapse_SQL_SER_LS'"
+		},
+		"syn_adls_LS_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'syn_adls_LS'"
+		},
+		"faizan_blob_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'faizan_blob_LS'",
+			"defaultValue": "DefaultEndpointsProtocol=https;AccountName=faizanblobstore;EndpointSuffix=core.windows.net;"
+		},
+		"onprem_sql_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'onprem_sql_LS'",
+			"defaultValue": "Integrated Security=False;Data Source=faizanvm\\SQLEXPRESS;Initial Catalog=growth_data;User ID=faizan_sql"
+		},
+		"faizan_key_vault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://faizan-key-vault-101.vault.azure.net/"
+		},
+		"faizan_synapse_SQL_SER_LS_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "faizan-synapse-ondemand.sql.azuresynapse.net"
+		},
+		"faizan_synapse_SQL_SER_LS_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "gold_layer"
+		},
+		"faizan_synapse_SQL_SER_LS_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "faizan-sql"
+		},
+		"gcp_bucket_http_LS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().baseurl}"
+		},
+		"syn_adls_LS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://faizanstoresynapse.dfs.core.windows.net/"
+		},
+		"faizan_adls_LS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://faizanadlsstore.dfs.core.windows.net/"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/faizan_key_vault')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('faizan_key_vault_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/faizan_synapse_SQL_SER_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"server": "[parameters('faizan_synapse_SQL_SER_LS_properties_typeProperties_server')]",
+					"database": "[parameters('faizan_synapse_SQL_SER_LS_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": true,
+					"authenticationType": "SQL",
+					"userName": "[parameters('faizan_synapse_SQL_SER_LS_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('faizan_synapse_SQL_SER_LS_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/gcp_bucket_http_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"baseurl": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('gcp_bucket_http_LS_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/syn_adls_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('syn_adls_LS_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('syn_adls_LS_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/self-hosted-IR')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"description": "this IR is meant for grabbing data from on Prem sql server on faizanvm",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SYN_ADLS_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "syn_adls_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ADLS_TO_SYN_ADLS"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "goldlayer"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/syn_adls_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/http_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "gcp_bucket_http_LS",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"baseurl": {
+							"value": "@dataset().baseurl",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"baseurl": {
+						"type": "string"
+					},
+					"relativeurl": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "gcp_http_Transfer"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().relativeurl",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/gcp_bucket_http_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/faizan_adls_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('faizan_adls_LS_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "faizan_key_vault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "faizan-adls-store-key"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_key_vault')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/faizan_blob_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('faizan_blob_LS_connectionString')]",
+					"accountKey": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "faizan_key_vault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "faizan-blob-storage-key"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_key_vault')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/faizan_databricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-1369833035971778.18.azuredatabricks.net",
+					"accessToken": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "faizan_key_vault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "access-token"
+					},
+					"newClusterNodeType": "Standard_F4",
+					"newClusterNumOfWorker": "1",
+					"newClusterSparkEnvVars": {
+						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+					},
+					"newClusterVersion": "14.3.x-scala2.12",
+					"clusterOption": "Fixed",
+					"newClusterInitScripts": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_key_vault')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/onprem_sql_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('onprem_sql_LS_connectionString')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "faizan_key_vault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "onprem-sql-password"
+					}
+				},
+				"connectVia": {
+					"referenceName": "self-hosted-IR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/self-hosted-IR')]",
+				"[concat(variables('factoryId'), '/linkedServices/faizan_key_vault')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/computation_PL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Notebook_project_101",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Shared/project_101"
+						},
+						"linkedServiceName": {
+							"referenceName": "faizan_databricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "COMPUTATION"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-07-23T15:00:29Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_databricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/IOT_COMP_DATA_BLOB_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "faizan_blob_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "IOT_TRANSFER"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "iot-sensors-outputs"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_blob_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/IOT_DATA_ADLS_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "faizan_adls_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "IOT_TRANSFER"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "IOT-input",
+						"fileSystem": "landing-zone"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_adls_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/gcp_http_adls_csv_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "faizan_adls_LS",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"filename": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "gcp_http_Transfer"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
+						"folderPath": "public-data",
+						"fileSystem": "landing-zone"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_adls_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/gold_tables_folders_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "faizan_adls_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ADLS_TO_SYN_ADLS"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_adls_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/onprem_sql_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "onprem_sql_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Onprem_Transfer"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "GenotypeName",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "plant_height_30DAT_CM",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "plant_height_60DAT_CM",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "plant_height_90DAT_CM",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "nu_primery_branches_Num",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "nu_fruits_per_plant",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "avg_fruit_weight_gram",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "days_flower_initiation_DAYS",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "fruit_TSS_Brix",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "fruit_circumference_mm",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "fruit_length_cm",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "fruit_yield_per_plant_Kg",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "StemAnthocyanin",
+						"type": "nvarchar"
+					},
+					{
+						"name": "AnthocyaninIntensity",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StemPubescence",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StemPubescenceIntensity",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LeafBladeColour",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LeafBladeColourIntensity",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ColourOfVein",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IntensityOfColour8",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SpineonLeaf",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FlowerColour",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FruitingPattern",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FruitColour",
+						"type": "nvarchar"
+					},
+					{
+						"name": "IntensityofColour13",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Stripes",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StripesDensity",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FruitPatches",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SpinesInCalyx",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DensityOfSpininess",
+						"type": "nvarchar"
+					},
+					{
+						"name": "FruitShape",
+						"type": "nvarchar"
+					},
+					{
+						"name": "yield_status",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "growth_parsed"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/onprem_sql_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/onprem_sql_adls_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "faizan_adls_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Onprem_Transfer"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "onprem-sql-data",
+						"fileSystem": "landing-zone"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_adls_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/url_csv_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "faizan_blob_LS",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gcp_http_Transfer"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "urls.csv",
+						"container": "gcp-bucket-url"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "baseurl",
+						"type": "String"
+					},
+					{
+						"name": "relativeurl",
+						"type": "String"
+					},
+					{
+						"name": "filename",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/faizan_blob_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ADLS_TO_SYN_ADLS_PL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy GOLD_LAYER data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "gold_tables_folders_DS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SYN_ADLS_DS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "SYN_WAREHOUSING"
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-07-24T09:32:14Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/gold_tables_folders_DS')]",
+				"[concat(variables('factoryId'), '/datasets/SYN_ADLS_DS')]"
+			]
+		}
+	]
+}

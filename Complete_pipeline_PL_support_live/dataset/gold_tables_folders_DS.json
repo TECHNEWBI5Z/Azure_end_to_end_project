@@ -1,0 +1,20 @@
+{
+    "name": "gold_tables_folders_DS",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "faizan_adls_LS",
+            "type": "LinkedServiceReference"
+        },
+        "folder": {
+            "name": "ADLS_TO_SYN_ADLS"
+        },
+        "annotations": [],
+        "type": "Binary",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation"
+            }
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

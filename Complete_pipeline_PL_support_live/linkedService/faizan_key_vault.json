@@ -1,0 +1,11 @@
+{
+    "name": "faizan_key_vault",
+    "type": "Microsoft.DataFactory/factories/linkedservices",
+    "properties": {
+        "annotations": [],
+        "type": "AzureKeyVault",
+        "typeProperties": {
+            "baseUrl": "https://faizan-key-vault-101.vault.azure.net/"
+        }
+    }
+}

@@ -1,0 +1,161 @@
+{
+    "name": "onprem_sql_DS",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "onprem_sql_LS",
+            "type": "LinkedServiceReference"
+        },
+        "folder": {
+            "name": "Onprem_Transfer"
+        },
+        "annotations": [],
+        "type": "SqlServerTable",
+        "schema": [
+            {
+                "name": "GenotypeName",
+                "type": "tinyint",
+                "precision": 3
+            },
+            {
+                "name": "plant_height_30DAT_CM",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "plant_height_60DAT_CM",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "plant_height_90DAT_CM",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "nu_primery_branches_Num",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "nu_fruits_per_plant",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "avg_fruit_weight_gram",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "days_flower_initiation_DAYS",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "fruit_TSS_Brix",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "fruit_circumference_mm",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "fruit_length_cm",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "fruit_yield_per_plant_Kg",
+                "type": "float",
+                "precision": 15
+            },
+            {
+                "name": "StemAnthocyanin",
+                "type": "nvarchar"
+            },
+            {
+                "name": "AnthocyaninIntensity",
+                "type": "nvarchar"
+            },
+            {
+                "name": "StemPubescence",
+                "type": "nvarchar"
+            },
+            {
+                "name": "StemPubescenceIntensity",
+                "type": "nvarchar"
+            },
+            {
+                "name": "LeafBladeColour",
+                "type": "nvarchar"
+            },
+            {
+                "name": "LeafBladeColourIntensity",
+                "type": "nvarchar"
+            },
+            {
+                "name": "ColourOfVein",
+                "type": "nvarchar"
+            },
+            {
+                "name": "IntensityOfColour8",
+                "type": "nvarchar"
+            },
+            {
+                "name": "SpineonLeaf",
+                "type": "nvarchar"
+            },
+            {
+                "name": "FlowerColour",
+                "type": "nvarchar"
+            },
+            {
+                "name": "FruitingPattern",
+                "type": "nvarchar"
+            },
+            {
+                "name": "FruitColour",
+                "type": "nvarchar"
+            },
+            {
+                "name": "IntensityofColour13",
+                "type": "nvarchar"
+            },
+            {
+                "name": "Stripes",
+                "type": "nvarchar"
+            },
+            {
+                "name": "StripesDensity",
+                "type": "nvarchar"
+            },
+            {
+                "name": "FruitPatches",
+                "type": "nvarchar"
+            },
+            {
+                "name": "SpinesInCalyx",
+                "type": "nvarchar"
+            },
+            {
+                "name": "DensityOfSpininess",
+                "type": "nvarchar"
+            },
+            {
+                "name": "FruitShape",
+                "type": "nvarchar"
+            },
+            {
+                "name": "yield_status",
+                "type": "nvarchar"
+            }
+        ],
+        "typeProperties": {
+            "schema": "dbo",
+            "table": "growth_parsed"
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

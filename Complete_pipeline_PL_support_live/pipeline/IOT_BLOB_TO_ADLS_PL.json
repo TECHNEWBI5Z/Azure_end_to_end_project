@@ -1,0 +1,59 @@
+{
+    "name": "IOT_BLOB_TO_ADLS_PL",
+    "properties": {
+        "activities": [
+            {
+                "name": "Copy data_iot_data_files",
+                "type": "Copy",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "BinarySource",
+                        "storeSettings": {
+                            "type": "AzureBlobStorageReadSettings",
+                            "recursive": true,
+                            "wildcardFileName": "*",
+                            "deleteFilesAfterCompletion": false
+                        },
+                        "formatSettings": {
+                            "type": "BinaryReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "BinarySink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        }
+                    },
+                    "enableStaging": false
+                },
+                "inputs": [
+                    {
+                        "referenceName": "IOT_COMP_DATA_BLOB_DS",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "IOT_DATA_ADLS_DS",
+                        "type": "DatasetReference"
+                    }
+                ]
+            }
+        ],
+        "folder": {
+            "name": "IOT_BLOT_TO_ADLS"
+        },
+        "annotations": [],
+        "lastPublishTime": "2024-07-24T17:05:03Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

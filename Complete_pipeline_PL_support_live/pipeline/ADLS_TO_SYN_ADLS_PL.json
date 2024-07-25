@@ -1,0 +1,57 @@
+{
+    "name": "ADLS_TO_SYN_ADLS_PL",
+    "properties": {
+        "activities": [
+            {
+                "name": "Copy GOLD_LAYER data",
+                "type": "Copy",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "BinarySource",
+                        "storeSettings": {
+                            "type": "AzureBlobFSReadSettings",
+                            "recursive": true
+                        },
+                        "formatSettings": {
+                            "type": "BinaryReadSettings"
+                        }
+                    },
+                    "sink": {
+                        "type": "BinarySink",
+                        "storeSettings": {
+                            "type": "AzureBlobFSWriteSettings"
+                        }
+                    },
+                    "enableStaging": false
+                },
+                "inputs": [
+                    {
+                        "referenceName": "gold_tables_folders_DS",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "SYN_ADLS_DS",
+                        "type": "DatasetReference"
+                    }
+                ]
+            }
+        ],
+        "folder": {
+            "name": "SYN_WAREHOUSING"
+        },
+        "annotations": [],
+        "lastPublishTime": "2024-07-24T17:05:03Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

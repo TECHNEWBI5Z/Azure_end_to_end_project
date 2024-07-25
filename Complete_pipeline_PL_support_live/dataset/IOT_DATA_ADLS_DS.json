@@ -1,0 +1,22 @@
+{
+    "name": "IOT_DATA_ADLS_DS",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "faizan_adls_LS",
+            "type": "LinkedServiceReference"
+        },
+        "folder": {
+            "name": "IOT_TRANSFER"
+        },
+        "annotations": [],
+        "type": "Binary",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "folderPath": "IOT-input",
+                "fileSystem": "landing-zone"
+            }
+        }
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

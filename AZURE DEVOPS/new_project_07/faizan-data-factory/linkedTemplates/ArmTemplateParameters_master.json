@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "faizan-data-factory"
+		},
+		"faizan_blob_LS_connectionString": {
+			"value": "DefaultEndpointsProtocol=https;AccountName=faizanblobstore;EndpointSuffix=core.windows.net;"
+		},
+		"faizan_synapse_SQL_SER_LS_password": {
+			"value": ""
+		},
+		"onprem_sql_LS_connectionString": {
+			"value": "Integrated Security=False;Data Source=faizanvm\\SQLEXPRESS;Initial Catalog=growth_data;User ID=faizan_sql"
+		},
+		"syn_adls_LS_accountKey": {
+			"value": ""
+		},
+		"faizan_adls_LS_properties_typeProperties_url": {
+			"value": "https://faizanadlsstore.dfs.core.windows.net/"
+		},
+		"faizan_key_vault_properties_typeProperties_baseUrl": {
+			"value": "https://faizan-key-vault-101.vault.azure.net/"
+		},
+		"faizan_synapse_SQL_SER_LS_properties_typeProperties_server": {
+			"value": "faizan-synapse-ondemand.sql.azuresynapse.net"
+		},
+		"faizan_synapse_SQL_SER_LS_properties_typeProperties_database": {
+			"value": "gold_layer"
+		},
+		"faizan_synapse_SQL_SER_LS_properties_typeProperties_userName": {
+			"value": "faizan-sql"
+		},
+		"gcp_bucket_http_LS_properties_typeProperties_url": {
+			"value": "@{linkedService().baseurl}"
+		},
+		"syn_adls_LS_properties_typeProperties_url": {
+			"value": "https://faizanstoresynapse.dfs.core.windows.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

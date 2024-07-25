@@ -1,0 +1,33 @@
+{
+    "name": "computation_PL",
+    "properties": {
+        "activities": [
+            {
+                "name": "Notebook_project_101",
+                "type": "DatabricksNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebookPath": "/Shared/project_101"
+                },
+                "linkedServiceName": {
+                    "referenceName": "faizan_databricks_LS",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "folder": {
+            "name": "COMPUTATION"
+        },
+        "annotations": [],
+        "lastPublishTime": "2024-07-25T04:36:09Z"
+    },
+    "type": "Microsoft.DataFactory/factories/pipelines"
+}

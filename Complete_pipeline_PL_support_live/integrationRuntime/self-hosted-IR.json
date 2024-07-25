@@ -1,0 +1,7 @@
+{
+    "name": "self-hosted-IR",
+    "properties": {
+        "type": "SelfHosted",
+        "description": "this IR is meant for grabbing data from on Prem sql server on faizanvm"
+    }
+}

@@ -1,0 +1,20 @@
+USE gold_layer
+GO
+
+CREATE OR ALTER PROC CreateSQLSeverlessView_gold @ViewName nvarchar(100)
+AS
+BEGIN
+
+DECLARE @statement VARCHAR(MAX)
+    SET @statement  = N'CREATE OR ALTER VIEW ' + @ViewName + ' AS
+        SELECT * 
+        FROM 
+            OPENROWSET(
+            BULK ''https://faizanadlsstore.dfs.core.windows.net/lakehouse/gold_layer/' + @ViewName + '/'',
+            FORMAT = ''DELTA''
+    ) as [result]
+    '
+EXEC (@statement)
+
+END
+GO
